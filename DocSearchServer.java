@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,7 +54,24 @@ class Handler implements URLHandler {
            else {
                return "Couldn't find query parameter q";
            }
-       }
+       } else if (url.getPath().equals("/title")) {
+            String[] parameters = url.getQuery().split("=");
+            if (parameters[0].equals("q")) {
+                String result = "";
+                List<String> foundPaths = new ArrayList<>();
+                for(File f: paths) {
+                    if(f.getPath().contains(parameters[1])) {
+                        foundPaths.add(f.toString());
+                    }
+                }
+                Collections.sort(foundPaths);
+                result = String.join("\n", foundPaths);
+                return String.format("Found %d paths:\n%s", foundPaths.size(), result);
+            }
+            else {
+                return "Couldn't find query parameter q";
+            }
+        }
        else {
            return "Don't know how to handle that path!";
        }
